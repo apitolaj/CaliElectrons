@@ -2,9 +2,9 @@
 
 BASE_DIR="$(pwd)"
 
-for i in $(seq 0 1);
+for i in $(seq 0 5);
 do
-    for k in $(seq 0 1);
+    for k in $(seq 0 6);
     do
     	DST_DIR="angles_Source_${i}_${k}"
     	mkdir -p ${DST_DIR}

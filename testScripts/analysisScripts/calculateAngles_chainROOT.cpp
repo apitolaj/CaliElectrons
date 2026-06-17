@@ -133,17 +133,17 @@ void calculateAngles_chainROOT_Source_SOURCE_PLACEHOLDER()
 	chain.SetBranchAddress("Eventdata", &Eve);
 	
 	TFile *outFile_envelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/angles_envelope_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
-	TTree *tr_envelope = new TTree("angles_envelope", "contains the azimuth and zenith angles of fitted 3D direction of electrons that DID pass through the envelope");
+	TTree *tr_envelope = new TTree("azimuth_zenith", "contains the azimuth and zenith angles of fitted 3D direction of electrons that DID pass through the envelope");
 
-	tr_envelope->Branch("azimuth_envelope", &azimuth, "azimuth/f");
-	tr_envelope->Branch("zenith_envelope", &zenith, "zenith/f");
+	tr_envelope->Branch("azimuth", &azimuth, "azimuth/f");
+	tr_envelope->Branch("zenith", &zenith, "zenith/f");
 	tr_envelope->Branch("eventNum", &eventNumber, "eventNumber/I");
 	
 	TFile *outFile_noEnvelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/angles_noEnvelope_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
-	TTree *tr_noEnvelope = new TTree("angles_noEnvelope", "contains the azimuth and zenith angles of fitted 3D direction of electrons that DID NOT pass through the envelope");
+	TTree *tr_noEnvelope = new TTree("azimuth_zenith", "contains the azimuth and zenith angles of fitted 3D direction of electrons that DID NOT pass through the envelope");
 
-	tr_noEnvelope->Branch("azimuth_noEnvelope", &azimuth, "azimuth/f");
-	tr_noEnvelope->Branch("zenith_noEnvelope", &zenith, "zenith/f");
+	tr_noEnvelope->Branch("azimuth", &azimuth, "azimuth/f");
+	tr_noEnvelope->Branch("zenith", &zenith, "zenith/f");
 	tr_noEnvelope->Branch("eventNum", &eventNumber, "eventNumber/I");
 
 	for (int i = 0; i < chain.GetEntries(); i++)
@@ -163,8 +163,11 @@ void calculateAngles_chainROOT_Source_SOURCE_PLACEHOLDER()
 		}
 	}
 	
+	outFile_envelope->cd();
 	tr_envelope->Write();
-    	tr_noEnvelope->Write();
+
+	outFile_noEnvelope->cd();
+	tr_noEnvelope->Write();
 
     	std::ofstream outFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/entryCounts_Source_SOURCE_PLACEHOLDER.txt");
     	
