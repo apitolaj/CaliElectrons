@@ -1,21 +1,16 @@
-// azimuth_zenith_histo_poly_2files.cpp
+// azimuth_zenith_histo_poly.cpp
 //
-// Equal-area polar hemisphere histograms for spherical data,
-// for TWO input ROOT files shown stacked in a single canvas.
-//
-// Layout (2x2 grid):
-//
-//   Row 1 (File A):  [ Left Hemisphere A ] [ Right Hemisphere A ]
-//   Row 2 (File B):  [ Left Hemisphere B ] [ Right Hemisphere B ]
-//
+// Equal-area polar hemisphere histograms for spherical data.
 // Uses TH2Poly with wedge-shaped bins (azimuth x zenith rings).
 //
-//   Left column  -> Left Hemisphere:
-//     centre = zenith 180° (-x)
+// Produces one PNG with both hemispheres side by side:
+//
+//   Left pad  ? Right Hemisphere:
+//     centre = zenith 0°   (+x)
 //     edge   = zenith 90°  (+z)
 //
-//   Right column -> Right Hemisphere:
-//     centre = zenith 0°   (+x)
+//   Right pad ? Left Hemisphere:
+//     centre = zenith 180° (-x)
 //     edge   = zenith 90°  (+z)
 //
 // IMPORTANT:
@@ -52,12 +47,12 @@
 //
 // Bin layout:
 //
-//   N_AZ_BINS  equal azimuth wedges (default 200, i.e. 1.8° each)
-//   N_ZEN_BINS equal-area zenith rings (default 100)
+//   N_AZ_BINS  equal azimuth wedges (default 144, i.e. 2.5° each)
+//   N_ZEN_BINS equal-area zenith rings (default 36, i.e. 2.5° each)
 //
 // Usage:
 //
-//   .x azimuth_zenith_histo_poly_2files.cpp("fileA.root", "fileB.root")
+//   .x azimuth_zenith_histo_poly.cpp("uniform_sphere.root")
 //
 // ============================================================
  
@@ -71,11 +66,9 @@
 #include "TLine.h"
 #include "TEllipse.h"
 #include "TVirtualPad.h"
-#include "TPaletteAxis.h"
  
 #include <cmath>
 #include <vector>
-#include <string>
 #include <iostream>
  
 // ------------------------------------------------------------
@@ -202,59 +195,59 @@ TH2Poly* BuildPoly(const char* name, bool rightHemi)
         new TH2Poly(name, name, -1.05, 1.05, -1.05, 1.05);
  
     poly->SetFloat();
-    double azStep = 360.0 / N_AZ_BINS;
-    double muStep = 1.0 / N_ZEN_BINS;
+	double azStep = 360.0 / N_AZ_BINS;
+	double muStep = 1.0 / N_ZEN_BINS;
+
+	for (int iz = 0; iz < N_ZEN_BINS; ++iz)
+	{
+	    double muLo, muHi;
+
+	    if (rightHemi)
+	    {
+		muHi = 1.0 - iz * muStep;
+		muLo = 1.0 - (iz + 1) * muStep;
+	    }
+	    else
+	    {
+		muHi = -iz * muStep;
+		muLo = -(iz + 1) * muStep;
+	    }
+
+	    double zenLo = std::acos(muHi) * TMath::RadToDeg();
+	    double zenHi = std::acos(muLo) * TMath::RadToDeg();
+
+	    for (int ia = 0; ia < N_AZ_BINS; ++ia)
+	    {
+		double azLo = ia * azStep;
+		double azHi = (ia + 1) * azStep;
+
+		AddWedgeBin(
+		    poly,
+		    rightHemi,
+		    zenLo,
+		    zenHi,
+		    azLo,
+		    azHi);
+	    }
+	}
+
+	return poly;
  
-    for (int iz = 0; iz < N_ZEN_BINS; ++iz)
-    {
-        double muLo, muHi;
- 
-        if (rightHemi)
-        {
-            muHi = 1.0 - iz * muStep;
-            muLo = 1.0 - (iz + 1) * muStep;
-        }
-        else
-        {
-            muHi = -iz * muStep;
-            muLo = -(iz + 1) * muStep;
-        }
- 
-        double zenLo = std::acos(muHi) * TMath::RadToDeg();
-        double zenHi = std::acos(muLo) * TMath::RadToDeg();
- 
-        for (int ia = 0; ia < N_AZ_BINS; ++ia)
-        {
-            double azLo = ia * azStep;
-            double azHi = (ia + 1) * azStep;
- 
-            AddWedgeBin(
-                poly,
-                rightHemi,
-                zenLo,
-                zenHi,
-                azLo,
-                azHi);
-        }
-    }
- 
-    return poly;
 }
- 
 // ------------------------------------------------------------
 // Decorations
 // ------------------------------------------------------------
- 
+
 void DrawPolarDecorations(bool rightHemi, const char* title)
 {
     // Labels measured from the centre of the displayed hemisphere.
     double displayZeniths[] = {0, 15, 30, 45, 60, 75, 90};
- 
+
     for (double z : displayZeniths)
     {
         double r;
         double labelZenith;
- 
+
         if (rightHemi)
         {
             // Right hemisphere:
@@ -271,14 +264,14 @@ void DrawPolarDecorations(bool rightHemi, const char* title)
             labelZenith = 180.0 - z;
             r = EqualAreaRadius(labelZenith, false);
         }
- 
+
         TEllipse* ring = new TEllipse(0.0, 0.0, r, r);
         ring->SetFillStyle(0);
         ring->SetLineStyle(2);
         ring->SetLineWidth(1);
         ring->SetLineColor(kBlack);
         ring->Draw("same");
- 
+
         // Label every ring except the centre point
         if (z > 0.0)
         {
@@ -286,28 +279,28 @@ void DrawPolarDecorations(bool rightHemi, const char* title)
                 new TLatex(r - 0.08,
                            0.01,
                            Form("%.0f#circ", labelZenith));
- 
+
             lbl->SetTextSize(0.022);
             lbl->Draw("same");
         }
     }
- 
+
     // Azimuth spokes
     for (int deg = 0; deg < 360; deg += 30)
     {
         double phi = AzToPlotRad(deg);
- 
+
         TLine* spoke =
             new TLine(0.0, 0.0,
                       std::cos(phi),
                       std::sin(phi));
- 
+
         spoke->SetLineStyle(2);
         spoke->SetLineWidth(1);
         spoke->SetLineColor(kBlack);
         spoke->Draw("same");
     }
- 
+
     struct
     {
         double az;
@@ -321,23 +314,23 @@ void DrawPolarDecorations(bool rightHemi, const char* title)
         {180, "Az 180#circ",    23 },
         {270, "Az 270#circ",    12 }
     };
- 
+
     double labelR = 1.05;
- 
+
     for (auto& d : dirs)
     {
         double phi = AzToPlotRad(d.az);
- 
+
         TLatex* lbl =
             new TLatex(labelR * std::cos(phi),
                        labelR * std::sin(phi),
                        d.text);
- 
+
         lbl->SetTextSize(0.025);
         lbl->SetTextAlign(d.align);
         lbl->Draw("same");
     }
- 
+
     TLatex* ttl = new TLatex(0.0, 1.25, title);
     ttl->SetTextAlign(22);
     ttl->SetTextSize(0.04);
@@ -419,21 +412,21 @@ void DrawHemisphere(TTree* tree,
     pad->SetFrameLineWidth(0);
  
     poly->Draw("COLZ");
- 
+    
     pad->Update();
- 
+    
     TPaletteAxis* palette =
-        (TPaletteAxis*)poly->GetListOfFunctions()->FindObject("palette");
- 
-    if (palette)
-    {
-        palette->SetX1NDC(0.925);  // left edge of bar (NDC)
-        palette->SetX2NDC(0.95);   // right edge
-        palette->SetY1NDC(0.10);   // bottom
-        palette->SetY2NDC(0.90);   // top
-        pad->Modified();
-        pad->Update();
-    }
+    (TPaletteAxis*)poly->GetListOfFunctions()->FindObject("palette");
+
+	if (palette)
+	{
+	    palette->SetX1NDC(0.925);  // left edge of bar (NDC)
+	    palette->SetX2NDC(0.95);  // right edge
+	    palette->SetY1NDC(0.10);  // bottom
+	    palette->SetY2NDC(0.90);  // top
+	    pad->Modified();
+	    pad->Update();
+	}
  
     DrawPolarDecorations(rightHemi, title);
  
@@ -441,19 +434,11 @@ void DrawHemisphere(TTree* tree,
 }
  
 // ------------------------------------------------------------
-// Open one file, grab its tree, and draw both hemispheres
-// for that file into the two given pads (left pad = left
-// hemisphere, right pad = right hemisphere).
-//
-// rowLabel is prepended to each pad's title, e.g. "File A"
-// so the two rows are visually distinguishable.
+// Main
 // ------------------------------------------------------------
  
-bool DrawFileRow(const char* filename,
-                 const char* rowLabel,
-                 const char* histPrefix,
-                 TVirtualPad* leftPad,
-                 TVirtualPad* rightPad)
+void azimuth_zenith_histo_TH2Poly(
+    const char* filename = "uniform_sphere.root")
 {
     TFile* f = TFile::Open(filename, "READ");
  
@@ -463,7 +448,7 @@ bool DrawFileRow(const char* filename,
             << "[ERROR] Cannot open "
             << filename
             << std::endl;
-        return false;
+        return;
     }
  
     TTree* tree = nullptr;
@@ -474,104 +459,56 @@ bool DrawFileRow(const char* filename,
         std::cerr
             << "[ERROR] TTree '"
             << TREE_NAME
-            << "' not found in "
-            << filename
+            << "' not found"
             << std::endl;
  
         f->Close();
-        return false;
+        return;
     }
  
     std::cout
-        << "[INFO] "
-        << filename
-        << " Entries = "
+        << "[INFO] Entries = "
         << tree->GetEntries()
         << std::endl;
  
-    std::string leftHistName  = std::string(histPrefix) + "_left_hemisphere";
-    std::string rightHistName = std::string(histPrefix) + "_right_hemisphere";
+    // --------------------------------------------------------
+    // One wide canvas split into two equal pads
+    // --------------------------------------------------------
  
-    std::string leftTitle  = std::string(rowLabel) + ": Left Hemisphere";
-    std::string rightTitle = std::string(rowLabel) + ": Right Hemisphere";
- 
-    // Left pad -> Left hemisphere (-x centre)
-    DrawHemisphere(
-        tree,
-        false,
-        leftHistName.c_str(),
-        leftTitle.c_str(),
-        leftPad);
- 
-    // Right pad -> Right hemisphere (+x centre)
-    DrawHemisphere(
-        tree,
-        true,
-        rightHistName.c_str(),
-        rightTitle.c_str(),
-        rightPad);
- 
-    // Note: file is intentionally left open since the TTree's
-    // branch addresses / the TH2Poly may still be referenced by
-    // pads that get redrawn later (e.g. interactively). It will
-    // be cleaned up when the process exits. If running this in
-    // a loop over many file pairs, consider closing explicitly
-    // once you're sure nothing else needs the tree.
- 
-    return true;
-}
- 
-// ------------------------------------------------------------
-// Main
-// ------------------------------------------------------------
- 
-void plotAngles_Source_SOURCE_PLACEHOLDER(
-    const char* filenameA = "uniform_sphere_A.root",
-    const char* filenameB = "uniform_sphere_B.root")
-{
     gStyle->SetOptStat(0);
     gStyle->SetOptTitle(0);
     gStyle->SetPalette(kBird);
  
-    // --------------------------------------------------------
-    // One canvas, 2x2 grid:
-    //   pad 1 = File A, left hemisphere
-    //   pad 2 = File A, right hemisphere
-    //   pad 3 = File B, left hemisphere
-    //   pad 4 = File B, right hemisphere
-    // --------------------------------------------------------
- 
     TCanvas* c =
-        new TCanvas("c_both_files", "Hemisphere Plots (2 files)", 2200, 2200);
+        new TCanvas("c_both", "Hemisphere Plots", 2200, 1100);
  
-    c->Divide(2, 2);
+    c->Divide(2, 1);
  
-    bool okA = DrawFileRow(
-        filenameA,
-        "Source SOURCE_PLACEHOLDER (Envelope)",
-        "fileA",
-        c->GetPad(1),
-        c->GetPad(2));
- 
-    bool okB = DrawFileRow(
-        filenameB,
-        "Source SOURCE_PLACEHOLDER (No Envelope)",
-        "fileB",
-        c->GetPad(3),
-        c->GetPad(4));
- 
-    if (!okA && !okB)
-    {
-        std::cerr << "[ERROR] Neither file could be processed. Aborting." << std::endl;
-        return;
-    }
+    // Left pad -> Left hemisphere (-x centre)
+    DrawHemisphere(
+	    tree,
+	    false,
+	    "left_hemisphere",
+	    "Left Hemisphere (-x centre, +z edge)",
+	    c->GetPad(1));
+
+	// Right pad -> Right hemisphere (+x centre)
+    DrawHemisphere(
+	    tree,
+	    true,
+	    "right_hemisphere",
+	    "Right Hemisphere (+x centre, +z edge)",
+	    c->GetPad(2));
+
  
     c->Update();
-    c->SaveAs("Source_SOURCE_PLACEHOLDER.png");
+    c->SaveAs("both_hemispheres.png");
  
     std::cout
-        << "[INFO] Saved Source_SOURCE_PLACEHOLDER_histo.png"
+        << "[INFO] Saved both_hemispheres.png"
         << std::endl;
+ 
+    f->Close();
  
     std::cout
         << "[INFO] Done."
