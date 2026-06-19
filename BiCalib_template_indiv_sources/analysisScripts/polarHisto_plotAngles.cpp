@@ -492,8 +492,8 @@ bool DrawFileRow(const char* filename,
     std::string leftHistName  = std::string(histPrefix) + "_left_hemisphere";
     std::string rightHistName = std::string(histPrefix) + "_right_hemisphere";
  
-    std::string leftTitle  = std::string(rowLabel) + ": Left Hemisphere";
-    std::string rightTitle = std::string(rowLabel) + ": Right Hemisphere";
+    std::string leftTitle  = std::string(rowLabel) + ": Left Hemi.";
+    std::string rightTitle = std::string(rowLabel) + ": Right Hemi.";
  
     // Left pad -> Left hemisphere (-x centre)
     DrawHemisphere(
@@ -525,7 +525,7 @@ bool DrawFileRow(const char* filename,
 // Main
 // ------------------------------------------------------------
  
-void plotAngles_Source_SOURCE_PLACEHOLDER(
+void polarHisto_plotAngles_Source_SOURCE_PLACEHOLDER(
     const char* filenameA = "uniform_sphere_A.root",
     const char* filenameB = "uniform_sphere_B.root")
 {
@@ -548,14 +548,14 @@ void plotAngles_Source_SOURCE_PLACEHOLDER(
  
     bool okA = DrawFileRow(
         filenameA,
-        "Source SOURCE_PLACEHOLDER (Envelope)",
+        "Source SOURCE_PLACEHOLDER (Env., ENERGY_PLACEHOLDER2)",
         "fileA",
         c->GetPad(1),
         c->GetPad(2));
  
     bool okB = DrawFileRow(
         filenameB,
-        "Source SOURCE_PLACEHOLDER (No Envelope)",
+        "Source SOURCE_PLACEHOLDER (No env., ENERGY_PLACEHOLDER2)",
         "fileB",
         c->GetPad(3),
         c->GetPad(4));
@@ -567,10 +567,10 @@ void plotAngles_Source_SOURCE_PLACEHOLDER(
     }
  
     c->Update();
-    c->SaveAs("Source_SOURCE_PLACEHOLDER.png");
+    c->SaveAs("polarHisto_ENERGY_PLACEHOLDER1_Source_SOURCE_PLACEHOLDER.png");
  
     std::cout
-        << "[INFO] Saved Source_SOURCE_PLACEHOLDER_histo.png"
+        << "[INFO] Saved polarHisto_ENERGY_PLACEHOLDER1_Source_SOURCE_PLACEHOLDER_histo.png"
         << std::endl;
  
     std::cout

@@ -146,31 +146,37 @@ void calculateAngles_600_800keV_chainROOT_Source_SOURCE_PLACEHOLDER()
 {
 	
 	TChain chain("Event");
-	populateChain(chain, "BASE_PLACEHOLDER/../Source_SOURCE_PLACEHOLDER/DATA/ROOTFiles");
+	populateChain(chain, "BASE_PLACEHOLDER/../SOURCES/Source_SOURCE_PLACEHOLDER/DATA/ROOTFiles");
 
 	MiEvent *Eve = new MiEvent();
 	chain.SetBranchAddress("Eventdata", &Eve);
 	
-	TFile *outFile_envelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/angles_envelope_600-800keV_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
+	TFile *outFile_envelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/angles_envelope_600_800keV_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_envelope = new TTree("azimuth_zenith", "contains the azimuth and zenith angles of fitted 3D direction of electrons that DID pass through the envelope");
 
 	tr_envelope->Branch("azimuth", &azimuth, "azimuth/f");
 	tr_envelope->Branch("zenith", &zenith, "zenith/f");
 	tr_envelope->Branch("eventNum", &eventNumber, "eventNumber/I");
 	
-	TFile *outFile_noEnvelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/angles_noEnvelope_600-800keV_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
+	TFile *outFile_noEnvelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/angles_noEnvelope_600_800keV_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_noEnvelope = new TTree("azimuth_zenith", "contains the azimuth and zenith angles of fitted 3D direction of electrons that DID NOT pass through the envelope");
 
 	tr_noEnvelope->Branch("azimuth", &azimuth, "azimuth/f");
 	tr_noEnvelope->Branch("zenith", &zenith, "zenith/f");
 	tr_noEnvelope->Branch("eventNum", &eventNumber, "eventNumber/I");
+	
+	int energyCount =0;
 
 	for (int i = 0; i < chain.GetEntries(); i++)
 	{
 		chain.GetEntry(i);
 		
+		
 		if(isEnergyBetween600_800keV(Eve))
-		{
+		{	
+		
+			energyCount++;
+			
 			if (isCalibElectron_envelope(Eve))
 			{
 			    eventNumber = i;
@@ -192,12 +198,12 @@ void calculateAngles_600_800keV_chainROOT_Source_SOURCE_PLACEHOLDER()
 	outFile_noEnvelope->cd();
 	tr_noEnvelope->Write();
 
-    	std::ofstream outFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/entryCounts_600-800keV_Source_SOURCE_PLACEHOLDER.txt");
+    	std::ofstream outFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/entryCounts_600_800keV_Source_SOURCE_PLACEHOLDER.txt");
     	
-    	outFile << "Entry count" << std::endl;
+    	outFile << "Entry count (of electrons only in the 600-800 keV range)" << std::endl;
 	outFile << "Envelope: " << tr_envelope->GetEntries() << std::endl;
 	outFile << "No Envelope: " << tr_noEnvelope->GetEntries() << std::endl;
-	outFile << "Total: " << chain.GetEntries() << std::endl;
+	outFile << "Total: " << energyCount << std::endl;
 	
 	outFile.close();
 	outFile_envelope->Close();

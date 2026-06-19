@@ -23,48 +23,21 @@ Once all is set, simply run the script: bash masterSubmit.sh
 
 source home_path.sh
 
-	(cd "${HOME_PATH}/Source_0_0/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_0_1/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_0_2/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_0_3/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_0_4/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_0_5/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_0_6/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_1_0/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_1_1/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_1_2/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_1_3/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_1_4/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_1_5/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_1_6/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_2_0/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_2_1/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_2_2/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_2_3/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_2_4/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_2_5/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_2_6/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_3_0/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_3_1/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_3_2/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_3_3/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_3_4/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_3_5/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_3_6/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_4_0/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_4_1/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_4_2/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_4_3/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_4_4/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_4_5/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_4_6/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_5_0/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_5_1/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_5_2/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_5_3/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_5_4/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_5_5/executionScripts" && bash submit_simu_array.sh 1 1)
-	(cd "${HOME_PATH}/Source_5_6/executionScripts" && bash submit_simu_array.sh 1 1)
+FIRST=1
+LAST=1
+
+for i in $(seq 0 5);
+do
+    for k in $(seq 0 6);
+    do
+	(cd "${HOME_PATH}/SOURCES/Source_${i}_${k}" && bash submit_simu_array.sh ${FIRST} ${LAST})
+    done
+done
+
+
+
+
+
 
 
 

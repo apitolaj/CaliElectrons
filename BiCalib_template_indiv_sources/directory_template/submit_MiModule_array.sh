@@ -16,7 +16,6 @@ find "${SRC_BASE_MI}" -mindepth 2 -maxdepth 2 -type f \
   -name "2D_reco_Bi_*.brio" \
   | sort > "${LIST}"
 
-#maybe makek the path go through DST_BASE_MI
 cp ${DST_BASE_MI}/inputted_brio_list.txt ${DST_BASE_MI}/root_list.txt
 
 FILE="/${DST_BASE_MI}/root_list.txt"
@@ -43,7 +42,7 @@ echo "Array job submitted: ${ARRAY_JOB_ID}"
 
 STACK_NAME="falaise@2026-04-07"
 
-mkdir -p "${HOME_PATH}/${SOURCE_FAMILY}/DATA/ROOTFiles/logs"
+mkdir -p "${HOME_PATH}/SOURCES/${SOURCE_FAMILY}/DATA/ROOTFiles/logs"
 
 # Submit the follow-up job, only runs after ALL array tasks complete successfully
 FOLLOWUP_JOB_ID=$(sbatch --dependency=afterok:${ARRAY_JOB_ID} \
@@ -53,9 +52,9 @@ FOLLOWUP_JOB_ID=$(sbatch --dependency=afterok:${ARRAY_JOB_ID} \
        --time=00:10:00 \
        --ntasks=1 \
        --cpus-per-task=1 \
-       --output="${HOME_PATH}/${SOURCE_FAMILY}/DATA/ROOTFiles/logs/merged_${SOURCE_FAMILY}_${ARRAY_JOB_ID}.out" \
+       --output="${HOME_PATH}/SOURCES/${SOURCE_FAMILY}/DATA/ROOTFiles/logs/merged_${SOURCE_FAMILY}_${ARRAY_JOB_ID}.out" \
        --error="/dev/null" \
        --parsable \
-       --wrap="source ${THRONG_DIR:-}/config/supernemo_profile.bash && snswmgr_load_stack ${STACK_NAME} && root -l -b -q 'merge.cpp(\"${HOME_PATH}/${SOURCE_FAMILY}/DATA/ROOTFiles/merged_${SOURCE_FAMILY}_${ARRAY_JOB_ID}.root\",\"${DST_BASE_MI}/root_list.txt\")'")
+       --wrap="source ${THRONG_DIR:-}/config/supernemo_profile.bash && snswmgr_load_stack ${STACK_NAME} && root -l -b -q 'merge.cpp(\"${HOME_PATH}/SOURCES/${SOURCE_FAMILY}/DATA/ROOTFiles/merged_${SOURCE_FAMILY}_${ARRAY_JOB_ID}.root\",\"${DST_BASE_MI}/root_list.txt\")'")
 
 echo "Follow-up job submitted: ${FOLLOWUP_JOB_ID} (runs after ${ARRAY_JOB_ID})"

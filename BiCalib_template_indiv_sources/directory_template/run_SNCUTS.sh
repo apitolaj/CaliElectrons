@@ -2,7 +2,7 @@
 #SBATCH --job-name=sncuts
 #SBATCH --mem=1G
 #SBATCH --licenses=sps
-#SBATCH --time=00:20:00
+#SBATCH --time=00:05:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 # #SBATCH --output=slurm-sncuts-%A_%a.out

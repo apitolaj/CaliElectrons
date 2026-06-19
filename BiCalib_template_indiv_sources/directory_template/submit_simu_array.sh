@@ -36,7 +36,7 @@ LAST="$2"
 # SIMU_DATA="/sps/nemo/scratch/apitolaj/new_template/DATA/brios"
 mkdir -p "${SIMU_DATA}"
 
-WORKER="$(cd "$(dirname "$0")" && pwd)/simu.sh"
+WORKER="$(cd "$(dirname "$0")" && pwd)/run_simu.sh"
 
 [ -f "${WORKER}" ] || { echo "ERROR: worker script not found: ${WORKER}"; exit 4; }
 [ -x "${WORKER}" ] || { echo "ERROR: worker script is not executable: ${WORKER}"; exit 5; }
@@ -78,7 +78,7 @@ FOLLOWUP_JOB_ID=$(sbatch --parsable \
        --dependency=afterok:${ARRAY_JOB_ID} \
        --mem=1G \
        --licenses=sps \
-       --time=00:10:00 \
+       --time=00:02:00 \
        --output="/dev/null" \
        --error="/dev/null" \
        --ntasks=1 \
