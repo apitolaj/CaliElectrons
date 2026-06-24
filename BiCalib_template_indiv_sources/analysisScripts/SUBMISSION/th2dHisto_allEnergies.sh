@@ -13,12 +13,12 @@ PROFILE_SCRIPT="${THRONG_DIR}/config/supernemo_profile.bash"
 STACK_NAME="falaise@2026-04-07"
 
 set +e
-set +u
-source "${PROFILE_SCRIPT}"
-PROFILE_RC=$?
-snswmgr_load_stack "${STACK_NAME}"
-STACK_RC=$?
-set -e
+	set +u
+		source "${PROFILE_SCRIPT}"
+		PROFILE_RC=$?
+		snswmgr_load_stack "${STACK_NAME}"
+		STACK_RC=$?
+	set -e
 set -u
 
 for i in $(seq 0 0);

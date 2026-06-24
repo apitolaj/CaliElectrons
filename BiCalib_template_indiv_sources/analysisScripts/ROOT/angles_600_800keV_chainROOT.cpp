@@ -24,6 +24,7 @@ A text file that contains a count of events in each ROOT file is also generated.
 
 //user must change this path to where their MiModule is located.
 #include "/sps/nemo/scratch/apitolaj/Modules/MiModule/include/MiEvent.h"
+#include "UTILS_PLACEHOLDER/functionUtils.h"
 #include "TLatex.h"
 #include "TVector3.h"
 #include <string>
@@ -37,113 +38,11 @@ A text file that contains a count of events in each ROOT file is also generated.
 //user must change this path to where their MiModule is located.
 R__LOAD_LIBRARY(/sps/nemo/scratch/apitolaj/Modules/MiModule/lib/libMiModule.so);
 
-float azimuth;
-float zenith;
-int eventNumber;
-
-bool isCalibElectron_envelope(MiEvent *Event)
-{
-	MiSD *sd = Event->getSD();
-    
-	if (sd)
-        {
-        std::vector<MiSDCaloHit> *ch = sd->getcalohitv();
-
-        	if (ch)
-        	{
-            		for (auto &hit : *ch)
-            		{
-                		if (hit.getcategory() == "bi207_calib_source" && hit.getname() == "e-" && hit.getGID()->gettype() == "1066")
-              			{
-                   			return true;
-                		}
-            		}
-        	}
-        }
-    	return false;
-}
-
-bool isCalibElectron_noEnvelope(MiEvent *Event)
-{
-	MiSD *sd = Event->getSD();
-    
-	if (sd)
-        {
-        std::vector<MiSDCaloHit> *ch = sd->getcalohitv();
-
-        	if (ch)
-        	{
-            		for (auto &hit : *ch)
-            		{
-                		if (hit.getcategory() == "bi207_calib_source" && hit.getname() == "e-" && hit.getGID()->gettype() == "1066")
-              			{
-                   			return false;
-                		}
-            		}
-        	}
-        }
-    	return true;
-}
-
-bool isEnergyBetween600_800keV(MiEvent *Event)
-{
-
-	double E_OM = 0;
-	std::vector<MiCDCaloHit>* caloHitVector = Event->getPTD()->getpart(0)->getcalohitv();
-
-	for(MiCDCaloHit& hit : *caloHitVector)
-	{
-		E_OM+=hit.getE();
-	}
-
-	if(600 < E_OM && E_OM < 800)
-	{
-		return true;
-	}
-	
-	return false;
-}
-
-void calculateAngles(MiEvent *Event)
-{
-	TVector3 dir = Event->getPTD()->getpart(0)->getdirectionfromfoil();
-	azimuth = TMath::ATan2(dir.Z() , dir.Y());
-	if (azimuth < 0) 
-	{
-		azimuth += 2.0 * TMath::Pi();  
-	}
-
-	azimuth *= 180.0 / TMath::Pi();
-	zenith = TMath::ACos(dir.X() / dir.Mag()) * 180.0 / TMath::Pi();
-}
-
-void populateChain(TChain &ROOTChain, const char *dirPath) 
-{
-	TSystemDirectory dir("dirPath", dirPath);
-	TList *files = dir.GetListOfFiles();
-	
-        if (files) 
-	{
-		TSystemFile *file;
-		TString fname;
-		TIter next(files);
-		
-		while ((file = (TSystemFile*)next())) 
-		{
-			fname = file->GetName();
-			
-			if (!file->IsDirectory() && fname.EndsWith(".root")) 
-			{
-				
-				TString fullPath = TString(dirPath) + "/" + fname;
-				ROOTChain.Add(fullPath);
-		        }
-		}
-	}
-}
-
 void angles_600_800keV_chainROOT_Source_SOURCE_PLACEHOLDER()
 {
+	float azimuth;
+	float zenith;
+	int eventNumber;
 	
 	TChain chain("Event");
 	populateChain(chain, "BASE_PLACEHOLDER/../SOURCES/Source_SOURCE_PLACEHOLDER/DATA/ROOTFiles");
