@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source config.sh
-source home_path.sh
+source "${PWD}/config.sh"
 
 set -euo pipefail
 

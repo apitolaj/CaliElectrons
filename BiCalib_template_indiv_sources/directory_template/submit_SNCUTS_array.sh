@@ -1,12 +1,14 @@
 #!/bin/bash
 
-source config.sh
+source "${PWD}/config.sh"
 
 set -euo pipefail
 
 # included in config.sh
 # SRC_BASE="/sps/nemo/scratch/apitolaj/new_template/DATA/brios"
 # DST_BASE="/sps/nemo/scratch/apitolaj/new_template/DATA/brios/SNCUTS/"
+
+#sed "s|HOMEDIR_PLACEHOLDER|${HOME_PATH}|g" "${HOME_PATH}/configuration/SNCUTS-pipeline.conf.template" > "${HOME_PATH}/configuration/SNCUTS-pipelines/SNCuts-pipeline_source_${SOURCE}.conf"
 
 mkdir -p "${DST_BASE_SN}"
 LIST="${DST_BASE_SN}/inputted_brio_list.txt"

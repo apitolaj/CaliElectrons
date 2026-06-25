@@ -8,7 +8,7 @@
 #SBATCH --output=slurm-miroot-%A_%a.out
 #SBATCH --error=slurm-miroot-%A_%a.err
 
-source config.sh
+source "${PWD}/config.sh"
 
 set -euo pipefail
 
@@ -17,6 +17,8 @@ set -euo pipefail
 LISTFILE="$1"
 SRC_BASE_MI="$2"
 DST_BASE_MI="$3"
+
+SUBMIT_DIR="${SLURM_SUBMIT_DIR}"
 
 [ -f "${LISTFILE}" ] || { echo "ERROR: LISTFILE does not exist: ${LISTFILE}"; exit 3; }
 [ -d "${SRC_BASE_MI}" ] || { echo "ERROR: SRC_BASE does not exist: ${SRC_BASE_MI}"; exit 3; }
@@ -114,7 +116,8 @@ rm -f "${INFILE}"
 echo "Removed: ${INFILE}"
 
 # Move log into output folder, delete error log
-LOG_FILE="slurm-miroot-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out"
-ERR_FILE="slurm-miroot-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
+LOG_FILE="${SUBMIT_DIR}/slurm-miroot-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out"
+ERR_FILE="${SUBMIT_DIR}/slurm-miroot-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.err"
 mv -f "${LOG_FILE}" "${OUTDIR}/" 2>/dev/null || true
-rm -f "${ERR_FILE}"
+mv -f "${ERR_FILE}" "${OUTDIR}/" 2>/dev/null || true
+#rm -f "${ERR_FILE}"

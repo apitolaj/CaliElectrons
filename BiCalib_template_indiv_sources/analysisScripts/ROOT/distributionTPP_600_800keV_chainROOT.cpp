@@ -29,29 +29,29 @@ void distributionTPP_600_800keV_chainROOT_Source_SOURCE_PLACEHOLDER()
 	TFile *outFile_envelope_g60 = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/distributionTPP_envelope_600_800keV_zenithg60_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_envelope_g60 = new TTree("TPPy_TPPz", "WRITE");
 
-	tr_envelope_g60->Branch("TPPy", &TPPy, "TPPy/f");
-	tr_envelope_g60->Branch("TPPz", &TPPz, "TPPz/f");
+	tr_envelope_g60->Branch("TPPy", &TPPy, "TPPy/D");
+	tr_envelope_g60->Branch("TPPz", &TPPz, "TPPz/D");
 	tr_envelope_g60->Branch("eventNumber", &eventNumber, "eventNumber/I");
 	
 	TFile *outFile_envelope_l60 = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/distributionTPP_envelope_600_800keV_zenithl60_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_envelope_l60 = new TTree("TPPy_TPPz", "WRITE");
 
-	tr_envelope_l60->Branch("TPPy", &TPPy, "TPPy/f");
-	tr_envelope_l60->Branch("TPPz", &TPPz, "TPPz/f");
+	tr_envelope_l60->Branch("TPPy", &TPPy, "TPPy/D");
+	tr_envelope_l60->Branch("TPPz", &TPPz, "TPPz/D");
 	tr_envelope_l60->Branch("eventNumber", &eventNumber, "eventNumber/I");
 	
 	TFile *outFile_noEnvelope_g60 = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/distributionTPP_noEnvelope_600_800keV_zenithg60_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_noEnvelope_g60 = new TTree("TPPy_TPPz", "WRITE");
 
-	tr_noEnvelope_g60->Branch("TPPy", &TPPy, "TPPy/f");
-	tr_noEnvelope_g60->Branch("TPPz", &TPPz, "TPPz/f");
+	tr_noEnvelope_g60->Branch("TPPy", &TPPy, "TPPy/D");
+	tr_noEnvelope_g60->Branch("TPPz", &TPPz, "TPPz/D");
 	tr_noEnvelope_g60->Branch("eventNumber", &eventNumber, "eventNumber/I");
 	
 	TFile *outFile_noEnvelope_l60 = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/distributionTPP_noEnvelope_600_800keV_zenithl60_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_noEnvelope_l60 = new TTree("TPPy_TPPz", "WRITE");
 
-	tr_noEnvelope_l60->Branch("TPPy", &TPPy, "TPPy/f");
-	tr_noEnvelope_l60->Branch("TPPz", &TPPz, "TPPz/f");
+	tr_noEnvelope_l60->Branch("TPPy", &TPPy, "TPPy/D");
+	tr_noEnvelope_l60->Branch("TPPz", &TPPz, "TPPz/D");
 	tr_noEnvelope_l60->Branch("eventNumber", &eventNumber, "eventNumber/I");
 	
 	for (int i = 0; i < chain.GetEntries(); i++)
@@ -114,7 +114,7 @@ void distributionTPP_600_800keV_chainROOT_Source_SOURCE_PLACEHOLDER()
 	outFile_noEnvelope_l60->cd();
 	tr_noEnvelope_l60->Write();
 
-    	std::ofstream outFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/zenithTPP_entryCounts_600_800keV_Source_SOURCE_PLACEHOLDER.txt");
+    	std::ofstream outFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/distributionTPP_entryCounts_600_800keV_Source_SOURCE_PLACEHOLDER.txt");
     	
     	outFile << "Entry count (all energies)" << std::endl;
 	outFile << "Envelope (zenith >= 60): " << tr_envelope_g60->GetEntries() << std::endl;

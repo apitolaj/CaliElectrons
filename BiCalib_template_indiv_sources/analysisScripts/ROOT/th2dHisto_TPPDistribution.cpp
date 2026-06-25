@@ -1,4 +1,4 @@
-void th2dHisto_TPPDistribution_Source_SOURCE_PLACEHOLDER(
+void th2dHisto_TPPDistribution_ENERGY_PLACEHOLDER1_Source_SOURCE_PLACEHOLDER(
     const char* file1, const char* file2,
     const char* file3, const char* file4)
 {

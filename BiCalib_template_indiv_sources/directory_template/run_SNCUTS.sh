@@ -8,8 +8,7 @@
 # #SBATCH --output=slurm-sncuts-%A_%a.out
 # #SBATCH --error=slurm-sncuts-%A_%a.err
 
-source config.sh
-source home_path.sh
+source "${PWD}/config.sh"
 
 set -euo pipefail
 
@@ -53,9 +52,8 @@ STACK_NAME="falaise@2026-04-07"
 #included in config.sh
 #CONF_SN="/sps/nemo/scratch/apitolaj/new_template/configuration/SNCuts-pipeline.conf"
 
-sed "s|HOMEDIR_PLACEHOLDER|${HOME_PATH}|g" "${HOME_PATH}/configuration/SNCUTS-pipeline.conf.template" > "${HOME_PATH}/configuration/SNCuts-pipeline.conf"
-
-CONF_SN="${HOME_PATH}/configuration/SNCuts-pipeline.conf"
+CONF_SN="${HOME_PATH}/configuration/SNCUTS-pipeline.conf"
+cp "${CONF_SN}" "${OUTDIR}"
 
 [ -f "${INFILE}" ]         || { echo "ERROR: Input file does not exist: ${INFILE}"; exit 101; }
 [ -n "${THRONG_DIR:-}" ]   || { echo "ERROR: THRONG_DIR is not set"; exit 106; }

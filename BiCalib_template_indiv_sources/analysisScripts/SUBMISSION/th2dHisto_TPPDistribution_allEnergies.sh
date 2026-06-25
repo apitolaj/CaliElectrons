@@ -21,18 +21,18 @@ STACK_RC=$?
 set -e
 set -u
 
-for i in $(seq 0 0);
+for i in $(seq 0 5);
 do
-    for k in $(seq 0 0);
+    for k in $(seq 0 6);
     do
     
         DST_DIR="../ANALYSIS/Source_${i}_${k}"
         
         if [ -d ${DST_DIR} ]; then
         
-		sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|ENERGY_PLACEHOLDER1|allEnergies|g; s|ENERGY_PLACEHOLDER2|all energies|g" "../ROOT/th2dHisto_TPPDistribution.cpp" > "${DST_DIR}/th2dHisto_TPPDistribution_Source_${i}_${k}.cpp"
+		sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|ENERGY_PLACEHOLDER1|allEnergies|g; s|ENERGY_PLACEHOLDER2|all energies|g" "../ROOT/th2dHisto_TPPDistribution.cpp" > "${DST_DIR}/th2dHisto_TPPDistribution_allEnergies_Source_${i}_${k}.cpp"
 	
-		(cd ${DST_DIR} && root -q -l -b 'th2dHisto_TPPDistribution_Source_'${i}_${k}'.cpp("distributionTPP_envelope_allEnergies_zenithg60_Source_'${i}_${k}'.root","distributionTPP_envelope_allEnergies_zenithl60_Source_'${i}_${k}'.root","distributionTPP_noEnvelope_allEnergies_zenithg60_Source_'${i}_${k}'.root","distributionTPP_noEnvelope_allEnergies_zenithl60_Source_'${i}_${k}'.root")')
+		(cd ${DST_DIR} && root -q -l -b 'th2dHisto_TPPDistribution_allEnergies_Source_'${i}_${k}'.cpp("distributionTPP_envelope_allEnergies_zenithg60_Source_'${i}_${k}'.root","distributionTPP_envelope_allEnergies_zenithl60_Source_'${i}_${k}'.root","distributionTPP_noEnvelope_allEnergies_zenithg60_Source_'${i}_${k}'.root","distributionTPP_noEnvelope_allEnergies_zenithl60_Source_'${i}_${k}'.root")')
 		
 	fi
 	

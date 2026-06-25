@@ -20,8 +20,13 @@ void zenithTPP_allEnergies_chainROOT_Source_SOURCE_PLACEHOLDER()
 	int eventNumber;
 	
 	MiVector3D* calibSourceVertexPos_Source_SOURCE_PLACEHOLDER = new MiVector3D();
-	calibSourceVertexPos_Source_SOURCE_PLACEHOLDER->setY(418.5);
-	calibSourceVertexPos_Source_SOURCE_PLACEHOLDER->setZ(-418.0);
+	
+	if(sourcePositions.count("Source_SOURCE_PLACEHOLDER"))
+	{
+		auto [Y, Z] = sourcePositions.at("Source_SOURCE_PLACEHOLDER");
+		calibSourceVertexPos_Source_SOURCE_PLACEHOLDER->setY(Y);
+		calibSourceVertexPos_Source_SOURCE_PLACEHOLDER->setZ(Z);
+	}
 	
 	TChain chain("Event");
 	populateChain(chain, "BASE_PLACEHOLDER/../SOURCES/Source_SOURCE_PLACEHOLDER/DATA/ROOTFiles");
@@ -32,15 +37,15 @@ void zenithTPP_allEnergies_chainROOT_Source_SOURCE_PLACEHOLDER()
 	TFile *outFile_envelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/zenithTPP_envelope_allEnergies_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_envelope = new TTree("zenith_TPP", "WRITE");
 
-	tr_envelope->Branch("zenith", &zenith, "zenith/f");
-	tr_envelope->Branch("distTPP", &distTPP, "distTPP/f");
+	tr_envelope->Branch("zenith", &zenith, "zenith/D");
+	tr_envelope->Branch("distTPP", &distTPP, "distTPP/D");
 	tr_envelope->Branch("eventNum", &eventNumber, "eventNumber/I");
 	
 	TFile *outFile_noEnvelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/zenithTPP_noEnvelope_allEnergies_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_noEnvelope = new TTree("zenith_TPP", "WRITE");
 
-	tr_noEnvelope->Branch("zenith", &zenith, "zenith/f");
-	tr_noEnvelope->Branch("distTPP", &distTPP, "distTPP/f");
+	tr_noEnvelope->Branch("zenith", &zenith, "zenith/D");
+	tr_noEnvelope->Branch("distTPP", &distTPP, "distTPP/D");
 	tr_noEnvelope->Branch("eventNum", &eventNumber, "eventNumber/I");
 
 	for (int i = 0; i < chain.GetEntries(); i++)

@@ -13,6 +13,10 @@
 //   Left column  -> Left Hemisphere:
 //     centre = zenith 180° (-x)
 //     edge   = zenith 90°  (+z)
+//     MIRRORED: azimuth increases in the opposite rotational
+//               direction so that handedness is consistent at
+//               the shared 90° equator edge (i.e. the two disks
+//               read like an unfolded sphere).
 //
 //   Right column -> Right Hemisphere:
 //     centre = zenith 0°   (+x)
@@ -96,11 +100,20 @@ const int ARC_STEPS = 32;
  
 // ------------------------------------------------------------
 // Azimuth conversion
+//
+// mirror = false (right hemisphere): azimuth increases
+//   counter-clockwise as seen by the viewer.
+//
+// mirror = true  (left hemisphere):  azimuth increases
+//   clockwise as seen by the viewer, so that the two disks
+//   have consistent handedness at their shared 90° equator
+//   edge ? equivalent to reflecting the disk across the y-axis.
 // ------------------------------------------------------------
  
-inline double AzToPlotRad(double az_deg)
+inline double AzToPlotRad(double az_deg, bool mirror = false)
 {
-    return (90.0 + az_deg) * TMath::DegToRad();
+    double phi = (90.0 + az_deg) * TMath::DegToRad();
+    return mirror ? TMath::Pi() - phi : phi;
 }
  
 // ------------------------------------------------------------
@@ -135,7 +148,8 @@ void AddWedgeBin(TH2Poly* poly,
                  double zenLo,
                  double zenHi,
                  double azLo,
-                 double azHi)
+                 double azHi,
+                 bool mirror = false)
 {
     double r_inner, r_outer;
  
@@ -153,8 +167,8 @@ void AddWedgeBin(TH2Poly* poly,
             std::swap(r_inner, r_outer);
     }
  
-    double phi_lo = AzToPlotRad(azLo);
-    double phi_hi = AzToPlotRad(azHi);
+    double phi_lo = AzToPlotRad(azLo, mirror);
+    double phi_hi = AzToPlotRad(azHi, mirror);
  
     std::vector<double> px, py;
  
@@ -196,7 +210,7 @@ void AddWedgeBin(TH2Poly* poly,
 // Create TH2Poly and populate all bins
 // ------------------------------------------------------------
  
-TH2Poly* BuildPoly(const char* name, bool rightHemi)
+TH2Poly* BuildPoly(const char* name, bool rightHemi, bool mirror = false)
 {
     TH2Poly* poly =
         new TH2Poly(name, name, -1.05, 1.05, -1.05, 1.05);
@@ -234,7 +248,8 @@ TH2Poly* BuildPoly(const char* name, bool rightHemi)
                 zenLo,
                 zenHi,
                 azLo,
-                azHi);
+                azHi,
+                mirror);
         }
     }
  
@@ -245,7 +260,7 @@ TH2Poly* BuildPoly(const char* name, bool rightHemi)
 // Decorations
 // ------------------------------------------------------------
  
-void DrawPolarDecorations(bool rightHemi, const char* title)
+void DrawPolarDecorations(bool rightHemi, const char* title, bool mirror = false)
 {
     // Labels measured from the centre of the displayed hemisphere.
     double displayZeniths[] = {0, 15, 30, 45, 60, 75, 90};
@@ -295,7 +310,7 @@ void DrawPolarDecorations(bool rightHemi, const char* title)
     // Azimuth spokes
     for (int deg = 0; deg < 360; deg += 30)
     {
-        double phi = AzToPlotRad(deg);
+        double phi = AzToPlotRad(deg, mirror);
  
         TLine* spoke =
             new TLine(0.0, 0.0,
@@ -322,16 +337,15 @@ void DrawPolarDecorations(bool rightHemi, const char* title)
         {270, "Az 270#circ",    12 }
     };
  
-    double labelR = 1.05;
+    double labelR = mirror ? 1.23 : 1.05;
  
     for (auto& d : dirs)
     {
-        double phi = AzToPlotRad(d.az);
+        double phi = AzToPlotRad(d.az, mirror);
  
-        TLatex* lbl =
-            new TLatex(labelR * std::cos(phi),
-                       labelR * std::sin(phi),
-                       d.text);
+	double lx = labelR * std::cos(phi);
+	double ly = mirror ? labelR * std::sin(phi) * 0.85 : labelR * std::sin(phi);
+	TLatex* lbl = new TLatex(lx, ly, d.text);
  
         lbl->SetTextSize(0.025);
         lbl->SetTextAlign(d.align);
@@ -347,15 +361,21 @@ void DrawPolarDecorations(bool rightHemi, const char* title)
  
 // ------------------------------------------------------------
 // Draw one hemisphere into a given pad
+//
+// mirror = true  -> flip the azimuthal handedness of the
+//                   projected disk (used for the left hemi).
+// mirror = false -> standard orientation (used for the right
+//                   hemi).
 // ------------------------------------------------------------
  
 void DrawHemisphere(TTree* tree,
                     bool rightHemi,
                     const char* histName,
                     const char* title,
-                    TVirtualPad* pad)
+                    TVirtualPad* pad,
+                    bool mirror = false)
 {
-    TH2Poly* poly = BuildPoly(histName, rightHemi);
+    TH2Poly* poly = BuildPoly(histName, rightHemi, mirror);
  
     Float_t zenith_val;
     Float_t azimuth_val;
@@ -395,7 +415,7 @@ void DrawHemisphere(TTree* tree,
         }
  
         double r   = EqualAreaRadius(z, rightHemi);
-        double phi = AzToPlotRad(a);
+        double phi = AzToPlotRad(a, mirror);
  
         poly->Fill(r * std::cos(phi), r * std::sin(phi));
     }
@@ -435,7 +455,7 @@ void DrawHemisphere(TTree* tree,
         pad->Update();
     }
  
-    DrawPolarDecorations(rightHemi, title);
+    DrawPolarDecorations(rightHemi, title, mirror);
  
     pad->Update();
 }
@@ -444,6 +464,10 @@ void DrawHemisphere(TTree* tree,
 // Open one file, grab its tree, and draw both hemispheres
 // for that file into the two given pads (left pad = left
 // hemisphere, right pad = right hemisphere).
+//
+// The left hemisphere is drawn with mirror = true so its
+// azimuthal handedness is flipped relative to the right,
+// making the two disks read like an unfolded sphere.
 //
 // rowLabel is prepended to each pad's title, e.g. "File A"
 // so the two rows are visually distinguishable.
@@ -492,24 +516,26 @@ bool DrawFileRow(const char* filename,
     std::string leftHistName  = std::string(histPrefix) + "_left_hemisphere";
     std::string rightHistName = std::string(histPrefix) + "_right_hemisphere";
  
-    std::string leftTitle  = std::string(rowLabel) + ": Left Hemi.";
-    std::string rightTitle = std::string(rowLabel) + ": Right Hemi.";
+    std::string leftTitle  = std::string(rowLabel) + ": Italian Side.";
+    std::string rightTitle = std::string(rowLabel) + ": French Side.";
  
-    // Left pad -> Left hemisphere (-x centre)
+    // Left pad -> Left hemisphere (-x centre), mirrored azimuth
     DrawHemisphere(
         tree,
         false,
         leftHistName.c_str(),
         leftTitle.c_str(),
-        leftPad);
+        leftPad,
+        true);   // <-- mirror = true
  
-    // Right pad -> Right hemisphere (+x centre)
+    // Right pad -> Right hemisphere (+x centre), standard azimuth
     DrawHemisphere(
         tree,
         true,
         rightHistName.c_str(),
         rightTitle.c_str(),
-        rightPad);
+        rightPad,
+        false);  // <-- mirror = false
  
     // Note: file is intentionally left open since the TTree's
     // branch addresses / the TH2Poly may still be referenced by
@@ -525,7 +551,7 @@ bool DrawFileRow(const char* filename,
 // Main
 // ------------------------------------------------------------
  
-void polarHisto_angles_Source_SOURCE_PLACEHOLDER(
+void polarHisto_angles_ENERGY_PLACEHOLDER1_Source_SOURCE_PLACEHOLDER(
     const char* filenameA = "uniform_sphere_A.root",
     const char* filenameB = "uniform_sphere_B.root")
 {
@@ -577,5 +603,6 @@ void polarHisto_angles_Source_SOURCE_PLACEHOLDER(
         << "[INFO] Done."
         << std::endl;
 }
+
 
 

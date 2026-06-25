@@ -1,4 +1,4 @@
-source "../../home_path.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../../home_path.sh"
 
 #if the user's home path was entered correctly in home_path.sh, there is no need to alter any of the paths below.
 

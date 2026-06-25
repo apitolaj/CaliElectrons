@@ -30,9 +30,9 @@ do
         
         if [ -d ${DST_DIR} ]; then
         
-		sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|ENERGY_PLACEHOLDER1|600_800keV|g; s|ENERGY_PLACEHOLDER2|600-800keV|g" "../ROOT/th2dHisto_zenithTPP.cpp" > "${DST_DIR}/th2dHisto_zenithTPP_Source_${i}_${k}.cpp"
+		sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|ENERGY_PLACEHOLDER1|600_800keV|g; s|ENERGY_PLACEHOLDER2|600-800keV|g; s|UTILS_PLACEHOLDER|../../ROOT|g" "../ROOT/th2dHisto_zenithTPP.cpp" > "${DST_DIR}/th2dHisto_zenithTPP_600_800keV_Source_${i}_${k}.cpp"
 		
-		(cd ${DST_DIR} && root -q -l -b 'th2dHisto_zenithTPP_Source_'${i}_${k}'.cpp("zenithTPP_envelope_600_800keV_Source_'${i}_${k}'.root","zenithTPP_noEnvelope_600_800keV_Source_'${i}_${k}'.root")')
+		(cd ${DST_DIR} && root -q -l -b 'th2dHisto_zenithTPP_600_800keV_Source_'${i}_${k}'.cpp("zenithTPP_envelope_600_800keV_Source_'${i}_${k}'.root","zenithTPP_noEnvelope_600_800keV_Source_'${i}_${k}'.root")')
 		
 	fi
 	

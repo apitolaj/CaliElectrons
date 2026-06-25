@@ -30,9 +30,9 @@ do
         
         if [ -d ${DST_DIR} ]; then
         
-		sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|ENERGY_PLACEHOLDER1|600_800keV|g; s|ENERGY_PLACEHOLDER2|600-800keV|g" "../ROOT/polarHisto_angles.cpp" > "${DST_DIR}/polarHisto_angles_Source_${i}_${k}.cpp"
+		sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|ENERGY_PLACEHOLDER1|600_800keV|g; s|ENERGY_PLACEHOLDER2|600-800keV|g" "../ROOT/polarHisto_angles.cpp" > "${DST_DIR}/polarHisto_angles_600_800keV_Source_${i}_${k}.cpp"
 		
-		(cd ${DST_DIR} && root -q -l -b 'polarHisto_angles_Source_'${i}_${k}'.cpp("angles_envelope_600_800keV_Source_'${i}_${k}'.root","angles_noEnvelope_600_800keV_Source_'${i}_${k}'.root")')
+		(cd ${DST_DIR} && root -q -l -b 'polarHisto_angles_600_800keV_Source_'${i}_${k}'.cpp("angles_envelope_600_800keV_Source_'${i}_${k}'.root","angles_noEnvelope_600_800keV_Source_'${i}_${k}'.root")')
 		
 	fi
 	

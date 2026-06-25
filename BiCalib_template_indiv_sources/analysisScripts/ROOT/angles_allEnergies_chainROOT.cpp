@@ -53,16 +53,16 @@ void angles_allEnergies_chainROOT_Source_SOURCE_PLACEHOLDER()
 	TFile *outFile_envelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/angles_envelope_allEnergies_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_envelope = new TTree("azimuth_zenith", "contains the azimuth and zenith angles of fitted 3D direction of electrons that DID pass through the envelope");
 
-	tr_envelope->Branch("azimuth", &azimuth, "azimuth/f");
-	tr_envelope->Branch("zenith", &zenith, "zenith/f");
-	tr_envelope->Branch("eventNum", &eventNumber, "eventNumber/I");
+	tr_envelope->Branch("azimuth", &azimuth);
+	tr_envelope->Branch("zenith", &zenith);
+	tr_envelope->Branch("eventNum", &eventNumber);
 	
 	TFile *outFile_noEnvelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/angles_noEnvelope_allEnergies_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
 	TTree *tr_noEnvelope = new TTree("azimuth_zenith", "contains the azimuth and zenith angles of fitted 3D direction of electrons that DID NOT pass through the envelope");
 
-	tr_noEnvelope->Branch("azimuth", &azimuth, "azimuth/f");
-	tr_noEnvelope->Branch("zenith", &zenith, "zenith/f");
-	tr_noEnvelope->Branch("eventNum", &eventNumber, "eventNumber/I");
+	tr_noEnvelope->Branch("azimuth", &azimuth);
+	tr_noEnvelope->Branch("zenith", &zenith);
+	tr_noEnvelope->Branch("eventNum", &eventNumber);
 
 	for (int i = 0; i < chain.GetEntries(); i++)
 	{
@@ -70,13 +70,15 @@ void angles_allEnergies_chainROOT_Source_SOURCE_PLACEHOLDER()
 		if (isCalibElectron_envelope(Eve))
 		{
 		    eventNumber = i;
-		    calculateAngles(Eve);
+		    zenith = calculateZenith(Eve);
+		    azimuth = calculateAzimuth(Eve);
 		    tr_envelope->Fill();
 		}
 		else if (isCalibElectron_noEnvelope(Eve))
 		{
 		    eventNumber = i;
-		    calculateAngles(Eve);
+	            zenith = calculateZenith(Eve);
+		    azimuth = calculateAzimuth(Eve);
 		    tr_noEnvelope->Fill();
 		}
 	}

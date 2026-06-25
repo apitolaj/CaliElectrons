@@ -13,9 +13,13 @@
 # Example ? simulate events 1..100, each in its own folder:
 #   bash submit_simu.sh 1 100
 
-source config.sh
+source "${PWD}/config.sh"
 
 set -euo pipefail
+
+sed "s|HOMEDIR_PLACEHOLDER|${HOME_PATH}|g; s|SOURCE_PLACEHOLDER|${SOURCE}|g" "${HOME_PATH}/configuration/simu_setup.conf.template" > "${MY_DIR}/simu_setups/simu_setup_source_${SOURCE}.conf"
+
+sed "s|HOMEDIR_PLACEHOLDER|${HOME_PATH}|g; s|SOURCE_PLACEHOLDER|${SOURCE}|g" "${HOME_PATH}/configuration/1S-pipeline.conf.template" > "${MY_DIR}/1S-pipelines/1S-pipeline_source_${SOURCE}.conf"
 
 # ============================================================
 # ARGUMENTS
@@ -67,7 +71,7 @@ done
 ARRAY_JOB_ID=$(sbatch --parsable \
        --array="${FIRST}-${LAST}%400" \
        --output="${SIMU_DATA}/%a/slurm-simu-%A_%a.out" \
-       --error="/dev/null" \
+       --error="${SIMU_DATA}/%a/slurm-simu-%A_%a.err" \
        "${WORKER}" "${SIMU_DATA}")
 
 echo "Array job submitted: ${ARRAY_JOB_ID}"

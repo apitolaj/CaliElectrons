@@ -29,7 +29,8 @@ STACK_RC=$?
 set -e
 set -u
 
-sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|DST_PLACEHOLDER|${DST_DIR}|g; s|BASE_PLACEHOLDER|${BASE_DIR}|g" "../ROOT/angles_600_800keV_chainROOT.cpp" > "../${DST_DIR}/angles_600_800keV_chainROOT_Source_${i}_${k}.cpp"
+sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|DST_PLACEHOLDER|${DST_DIR}|g; s|BASE_PLACEHOLDER|${BASE_DIR}|g; 
+s|UTILS_PLACEHOLDER|../../ROOT|g" "../ROOT/angles_600_800keV_chainROOT.cpp" > "../${DST_DIR}/angles_600_800keV_chainROOT_Source_${i}_${k}.cpp"
 	
 (cd "../../SOURCES/Source_${i}_${k}/DATA/ROOTFiles" && root -l -b -q "${BASE_DIR}/${DST_DIR}/angles_600_800keV_chainROOT_Source_${i}_${k}.cpp")
 	

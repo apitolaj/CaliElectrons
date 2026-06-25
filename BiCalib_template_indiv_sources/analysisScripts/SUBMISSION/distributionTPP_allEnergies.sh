@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=zenithTPP
-#SBATCH --array=1-1
+#SBATCH --array=1-42
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
 #SBATCH --time=00:03:00

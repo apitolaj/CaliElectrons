@@ -8,7 +8,7 @@
 # #SBATCH --output=slurm-simu-%A_%a.out
 # #SBATCH --error=slurm-simu-%A_%a.err
 
-source config.sh
+source "${PWD}/config.sh"
 
 set -euo pipefail
 
@@ -34,10 +34,6 @@ num="${SLURM_ARRAY_TASK_ID}"
 
 # included in config.sh
 # MY_DIR="/sps/nemo/scratch/apitolaj/new_template/configuration"
-
-sed "s|HOMEDIR_PLACEHOLDER|${HOME_PATH}|g; s|SOURCE_PLACEHOLDER|${SOURCE}|g" "${HOME_PATH}/configuration/simu_setup.conf.template" > "${MY_DIR}/simu_setups/simu_setup_source_${SOURCE}.conf"
-
-sed "s|HOMEDIR_PLACEHOLDER|${HOME_PATH}|g; s|SOURCE_PLACEHOLDER|${SOURCE}|g" "${HOME_PATH}/configuration/1S-pipeline.conf.template" > "${MY_DIR}/1S-pipelines/1S-pipeline_source_${SOURCE}.conf"
 
 SIMU_CONF="${MY_DIR}/simu_setups/simu_setup_source_${SOURCE}.conf"
 PIPE1_CONF="${MY_DIR}/1S-pipelines/1S-pipeline_source_${SOURCE}.conf"
