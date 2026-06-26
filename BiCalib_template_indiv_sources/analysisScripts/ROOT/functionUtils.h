@@ -6,9 +6,9 @@ bool isCalibElectron_envelope(MiEvent *Event);
 
 bool isCalibElectron_noEnvelope(MiEvent *Event);
 
-double calculateZenith(MiEvent *Event);
+float calculateZenith(MiEvent *Event);
 
-double calculateAzimuth(MiEvent *Event);
+float calculateAzimuth(MiEvent *Event);
 
 MiVector3D* calculatePosTPPVector(MiEvent *Event);
 
@@ -16,11 +16,11 @@ void populateChain(TChain &ROOTChain, const char *dirPath);
 
 bool isEnergyBetween600_800keV(MiEvent *Event);
 
-double calculateDistTPP(MiEvent *Event, MiVector3D *calibSourceVertexPos);
+float calculateDistTPP(MiEvent *Event, MiVector3D *calibSourceVertexPos);
 
 
 //-----------------------------------------------------------------------
-double calculateDistTPP(MiEvent *Event, MiVector3D *calibSourceVertexPos)
+float calculateDistTPP(MiEvent *Event, MiVector3D *calibSourceVertexPos)
 {
 
 	MiVector3D* refSourceVertexPos = nullptr;
@@ -40,7 +40,7 @@ double calculateDistTPP(MiEvent *Event, MiVector3D *calibSourceVertexPos)
 	diffVector->setY(refSourceVertexPos->getY()-calibSourceVertexPos->getY());
 	diffVector->setZ(refSourceVertexPos->getZ()-calibSourceVertexPos->getZ());
 	
-	double distTPP=diffVector->getModule(); 
+	float distTPP=diffVector->getModule(); 
 	return distTPP;
 	
 }
@@ -48,7 +48,7 @@ double calculateDistTPP(MiEvent *Event, MiVector3D *calibSourceVertexPos)
 bool isEnergyBetween600_800keV(MiEvent *Event)
 {
 
-	double E_OM = 0;
+	float E_OM = 0;
 	std::vector<MiCDCaloHit>* caloHitVector = Event->getPTD()->getpart(0)->getcalohitv();
 
 	for(MiCDCaloHit& hit : *caloHitVector)
@@ -117,17 +117,17 @@ bool isCalibElectron_noEnvelope(MiEvent *Event)
         return (isCalibElectron && !didInteractEnvelope);
 }
 
-double calculateZenith(MiEvent *Event)
+float calculateZenith(MiEvent *Event)
 {
 	TVector3 dir = Event->getPTD()->getpart(0)->getdirectionfromfoil();
-	double zenith = TMath::ACos(dir.X() / dir.Mag()) * 180.0 / TMath::Pi();
+	float zenith = TMath::ACos(dir.X() / dir.Mag()) * 180.0 / TMath::Pi();
 	return zenith;
 }
 
-double calculateAzimuth(MiEvent *Event)
+float calculateAzimuth(MiEvent *Event)
 {
 	TVector3 dir = Event->getPTD()->getpart(0)->getdirectionfromfoil();
-	double azimuth = TMath::ATan2(dir.Z() , dir.Y());
+	float azimuth = TMath::ATan2(dir.Z() , dir.Y());
 	if (azimuth < 0) 
 	{
 		azimuth += 2.0 * TMath::Pi();  

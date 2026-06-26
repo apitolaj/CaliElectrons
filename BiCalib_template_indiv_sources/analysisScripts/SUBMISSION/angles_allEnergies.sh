@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=ANGLES
+#SBATCH --job-name=ang_allE
 #SBATCH --array=1-42
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null

@@ -34,6 +34,8 @@ void zenithTPP_600_800keV_chainROOT_Source_SOURCE_PLACEHOLDER()
 	chain.SetBranchAddress("Eventdata", &Eve);
 	
 	TFile *outFile_envelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/zenithTPP_envelope_600_800keV_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
+	
+	outFile_envelope->cd();                        
 	TTree *tr_envelope = new TTree("zenith_TPP", "WRITE");
 
 	tr_envelope->Branch("zenith", &zenith, "zenith/D");
@@ -41,6 +43,7 @@ void zenithTPP_600_800keV_chainROOT_Source_SOURCE_PLACEHOLDER()
 	tr_envelope->Branch("eventNum", &eventNumber, "eventNumber/I");
 	
 	TFile *outFile_noEnvelope = new TFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/zenithTPP_noEnvelope_600_800keV_Source_SOURCE_PLACEHOLDER.root", "RECREATE");
+	outFile_noEnvelope->cd(); 
 	TTree *tr_noEnvelope = new TTree("zenith_TPP", "WRITE");
 
 	tr_noEnvelope->Branch("zenith", &zenith, "zenith/D");
@@ -56,34 +59,43 @@ void zenithTPP_600_800keV_chainROOT_Source_SOURCE_PLACEHOLDER()
 			if (isCalibElectron_envelope(Eve))
 			{
 			    eventNumber = i;
-			    calculateZenith(Eve);
-			    calculateDistTPP(Eve, calibSourceVertexPos_Source_SOURCE_PLACEHOLDER);
+			    zenith = calculateZenith(Eve);
+			    distTPP = calculateDistTPP(Eve, calibSourceVertexPos_Source_SOURCE_PLACEHOLDER);
+			    outFile_envelope->cd();
 			    tr_envelope->Fill();
 			}
 			else if (isCalibElectron_noEnvelope(Eve))
 			{
 			    eventNumber = i;
-			    calculateZenith(Eve);
-			    calculateDistTPP(Eve, calibSourceVertexPos_Source_SOURCE_PLACEHOLDER);
+			    zenith = calculateZenith(Eve);
+			    distTPP = calculateDistTPP(Eve, calibSourceVertexPos_Source_SOURCE_PLACEHOLDER);
+			    outFile_noEnvelope->cd();
 			    tr_noEnvelope->Fill();
 			}
 		}
 	}
+	
+	int envelopeCount   = tr_envelope->GetEntries();
+	int noEnvelopeCount = tr_noEnvelope->GetEntries();
+	int totalCount      = chain.GetEntries();
+	
 	outFile_envelope->cd();
-	tr_envelope->Write();
+	tr_envelope->Write("", TObject::kOverwrite);
+	delete outFile_envelope;       
+	outFile_envelope = nullptr;
+	tr_envelope      = nullptr;    
 
 	outFile_noEnvelope->cd();
-	tr_noEnvelope->Write();
+	tr_noEnvelope->Write("", TObject::kOverwrite);
+	delete outFile_noEnvelope;    
+	outFile_noEnvelope = nullptr;
+	tr_noEnvelope      = nullptr;
 
-    	std::ofstream outFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/zenithTPP_entryCounts_600_800keV_Source_SOURCE_PLACEHOLDER.txt");
-    	
-    	outFile << "Entry count (all energies)" << std::endl;
-	outFile << "Envelope: " << tr_envelope->GetEntries() << std::endl;
-	outFile << "No Envelope: " << tr_noEnvelope->GetEntries() << std::endl;
-	outFile << "Total: " << chain.GetEntries() << std::endl;
-	
+ 	std::ofstream outFile("BASE_PLACEHOLDER/DST_PLACEHOLDER/zenithTPP_entryCounts_600_800keV_Source_SOURCE_PLACEHOLDER.txt");
+	outFile << "Entry count (600-800keV)" << std::endl;
+	outFile << "Envelope: "    << envelopeCount   << std::endl;
+	outFile << "No Envelope: " << noEnvelopeCount << std::endl;
+	outFile << "Total: "       << totalCount      << std::endl;
 	outFile.close();
-	outFile_envelope->Close();
-	outFile_noEnvelope->Close();
 }
 

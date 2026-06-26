@@ -537,12 +537,7 @@ bool DrawFileRow(const char* filename,
         rightPad,
         false);  // <-- mirror = false
  
-    // Note: file is intentionally left open since the TTree's
-    // branch addresses / the TH2Poly may still be referenced by
-    // pads that get redrawn later (e.g. interactively). It will
-    // be cleaned up when the process exits. If running this in
-    // a loop over many file pairs, consider closing explicitly
-    // once you're sure nothing else needs the tree.
+ 	f->Close();
  
     return true;
 }

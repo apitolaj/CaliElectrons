@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=zenithTPP
+#SBATCH --job-name=distTPP_600_800keV
 #SBATCH --array=1-42
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
