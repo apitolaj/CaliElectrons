@@ -1,13 +1,21 @@
 #!/bin/bash
-#SBATCH --job-name=th2dHisto_600_800keV
-#SBATCH --mem=1G
-#SBATCH --licenses=sps
-#SBATCH --time=00:10:00
+#SBATCH --job-name=zenithTPP_600_800keV
+#SBATCH --array=1-42
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
-#SBATCH --ntasks=1
+#SBATCH --time=00:03:00
+#SBATCH --mem=1G
 #SBATCH --cpus-per-task=1
 #SBATCH --export=HOME,USER,THRONG_DIR
+
+IDX=$((SLURM_ARRAY_TASK_ID - 1))
+i=$((IDX / 7))
+k=$((IDX % 7))
+
+BASE_DIR="$(pwd)/.."
+DST_DIR="ANALYSIS/Source_${i}_${k}"
+
+mkdir -p ${BASE_DIR}/${DST_DIR}
 
 PROFILE_SCRIPT="${THRONG_DIR}/config/supernemo_profile.bash"
 STACK_NAME="falaise@2026-04-07"
@@ -20,21 +28,10 @@ snswmgr_load_stack "${STACK_NAME}"
 STACK_RC=$?
 set -e
 set -u
-
-for i in $(seq 0 5);
-do
-    for k in $(seq 0 6);
-    do
-    
-        DST_DIR="../ANALYSIS/Source_${i}_${k}"
-        
-        if [ -d ${DST_DIR} ]; then
-        
-		sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|ENERGY_PLACEHOLDER1|600_800keV|g; s|ENERGY_PLACEHOLDER2|600-800keV|g" "../ROOT/th2dHisto_zenithDistOM.cpp" > "${DST_DIR}/th2dHisto_zenithDistOM_600_800keV_Source_${i}_${k}.cpp"
-		
-		(cd ${DST_DIR} && root -q -l -b 'th2dHisto_zenithDistOM_600_800keV_Source_'${i}_${k}'.cpp("zenithDistOM_envelope_600_800keV_Source_'${i}_${k}'.root","zenithDistOM_noEnvelope_600_800keV_Source_'${i}_${k}'.root")')
-		
-	fi
+    	
+sed "s|SOURCE_PLACEHOLDER|${i}_${k}|g; s|DST_PLACEHOLDER|${DST_DIR}|g; s|BASE_PLACEHOLDER|${BASE_DIR}|g;
+s|UTILS_PLACEHOLDER|../../ROOT|g" "../ROOT/zenithDistOM_600_800keV_chainROOT.cpp" > "../${DST_DIR}/zenithDistOM_600_800keV_chainROOT_Source_${i}_${k}.cpp"
 	
-    done
-done
+(cd "../../SOURCES/Source_${i}_${k}/DATA/ROOTFiles" && root -l -b -q "${BASE_DIR}/${DST_DIR}/zenithDistOM_600_800keV_chainROOT_Source_${i}_${k}.cpp")
+	
+echo "Finished source_${i}_${k}."l
